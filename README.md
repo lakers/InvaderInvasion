@@ -11,5 +11,6 @@ Ship player:
    Control to fire
 
 Enemy player:
-   Drag to move
-   Click on turret to fire
+   Click to summon turret or boss (if timer is complete)
+   Drag to move boss
+   Click on boss turret to fire
