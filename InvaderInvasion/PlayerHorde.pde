@@ -2,7 +2,7 @@ public class PlayerHorde extends GameObject {
   private int summonTimer;
   
   public PlayerHorde() {
-    summonTimer = 30; 
+    summonTimer = 60; 
   }
   
   public void draw(boolean debug) {
@@ -19,7 +19,7 @@ public class PlayerHorde extends GameObject {
   }
   
   public boolean canSummon() {
-    return (summonTimer == 30); 
+    return (summonTimer == 60); 
   }
   
   public void summon() {
@@ -28,8 +28,8 @@ public class PlayerHorde extends GameObject {
   
   public void step(){
     summonTimer += 1;
-    if(summonTimer > 30) {
-      summonTimer = 30; 
+    if(summonTimer > 60) {
+      summonTimer = 60; 
     }
   }
   

@@ -6,6 +6,7 @@ public class GameObjectManager {
   private boolean mouseHeld;
   
   private Boss testBoss;
+  private BossMeter bossMeter;
   
   
   public GameObjectManager(PlayerShip playerShip, PlayerHorde playerHorder) {
@@ -14,8 +15,10 @@ public class GameObjectManager {
     playerObjects = new ArrayList();
     hordeObjects = new ArrayList();
     mouseHeld = false;
-    testBoss = new Boss(new PVector(250.0f, 100.0f));
-    testBoss.setTarget(playerShip);
+    //testBoss = new Boss(new PVector(250.0f, 100.0f));
+    testBoss = null;
+    //testBoss.setTarget(playerShip);
+    bossMeter = new BossMeter(new PVector(90,5));
   } 
   
   public PlayerShip getPlayerShip() {
@@ -50,12 +53,13 @@ public class GameObjectManager {
       object.draw(debug);  
     }
     
-    
+    bossMeter.draw(debug);
   }
   
   public void step() {
     playerShip.step();
     playerHorde.step();
+    bossMeter.step();
     if(testBoss != null) {
       testBoss.step(); 
     }
@@ -96,6 +100,13 @@ public class GameObjectManager {
           playerObjects.remove(shipObject);
           hordeObjects.remove(hordeObject); 
         }
+      }
+      if(testBoss != null) {
+         BossComponent component = testBoss.checkCollision(shipObject);
+         if(component != null) {
+           component.changeHPRelative(-1);
+           playerObjects.remove(shipObject); 
+         }
       }
     }
     for(int index = 0; index < hordeObjects.size(); index++) {
@@ -144,13 +155,20 @@ public class GameObjectManager {
   
   public void createHordeObject() {
     mouseHeld = false;
-    
-//    if(mouseY < 150 && playerHorde.canSummon()) {
-//      playerHorde.summon();
-//      HexShooter hexShooter = new HexShooter();
-//      hexShooter.setPosition(playerHorde.getPosition().x, playerHorde.getPosition().y);
-//      hexShooter.setTarget(playerShip);
-//      addHordeObject(hexShooter);
-//    } 
+    if(mouseY < 150 && playerHorde.canSummon())
+    {
+      if(bossMeter.getStatus() >= 1.0) {
+        if(testBoss == null) {
+          testBoss = new Boss(new PVector(250.0f, 100.0f));
+          testBoss.setTarget(playerShip);
+        }
+      } else {
+        playerHorde.summon();
+        HexShooter hexShooter = new HexShooter();
+        hexShooter.setPosition(playerHorde.getPosition().x, playerHorde.getPosition().y);
+        hexShooter.setTarget(playerShip);
+        addHordeObject(hexShooter);
+      }
+    } 
   }
 }

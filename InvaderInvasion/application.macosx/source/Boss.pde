@@ -67,6 +67,16 @@ public class Boss extends GameObject {
     leftArm.step();
     rightArm.step();
   }
+  
+  public BossComponent checkCollision(GameObject other) {
+    if(leftArm.getBoundingCircle().collidingWith(other.getBoundingCircle()) && leftArm.isAlive()) {
+      return leftArm;
+    } else if(rightArm.getBoundingCircle().collidingWith(other.getBoundingCircle()) && leftArm.isAlive()) {
+      return rightArm; 
+    }
+    return null;
+  }
+  
   public boolean canShoot() {return false;}
   public void draw(boolean debug) {
     stroke(255);

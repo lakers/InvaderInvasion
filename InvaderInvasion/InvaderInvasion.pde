@@ -4,6 +4,7 @@ public static final int HEIGHT = 640;
 Backdrop backdrop0, backdrop1, backdrop2;
 boolean debug;
 GameObjectManager gameManager;
+BossMeter meter;
 
 // input state for ship movement
 // TODO: better input handling
@@ -94,6 +95,8 @@ void keyReleased() {
       shot.setPosition(PVector.add(ship.getPosition(), temp));
       gameManager.addPlayerObject(shot);
     }
+  } else if(key == 't') {
+    meter.step(); 
   }
 }
 

@@ -5,7 +5,7 @@ public class HexShooter extends GameObject {
   private int shotTimer;
   
   public HexShooter() {
-    shotTimer = 60;
+    shotTimer = 90;
     r = 20.0; 
     target = null;
     boundingCircle = new BoundingCircle(position, 20);
@@ -21,13 +21,13 @@ public class HexShooter extends GameObject {
   }
   
   public boolean canShoot() {
-    return (shotTimer == 60); 
+    return (shotTimer == 90); 
   }
   
   public void step() {
     shotTimer += 1;
-    if(shotTimer > 60) {
-      shotTimer = 60; 
+    if(shotTimer > 90) {
+      shotTimer = 90; 
     }
     moveRelative(new PVector(0, rate));
     boundingCircle.setPosition(position); 

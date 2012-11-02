@@ -1,10 +1,12 @@
 public abstract class GameObject {
   protected PVector position;
   protected BoundingCircle boundingCircle;
+  protected boolean visible;
 
   
   public GameObject() {
     position = new PVector();
+    visible = true;
   } 
   
   public void setPosition(PVector position) {

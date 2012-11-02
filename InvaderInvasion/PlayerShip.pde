@@ -3,7 +3,7 @@ public class PlayerShip extends GameObject {
   private int shotTimer;
   
   public PlayerShip(PVector position) {
-    shotTimer = 30;
+    shotTimer = 20;
     this.position = position;
     destination = new PVector();
     
@@ -25,7 +25,7 @@ public class PlayerShip extends GameObject {
   }
   
   public boolean canShoot() {
-    return (shotTimer == 30); 
+    return (shotTimer == 20); 
   }
   
   public void shoot() {
@@ -34,8 +34,8 @@ public class PlayerShip extends GameObject {
   
   public void step() {
     shotTimer += 1;
-    if(shotTimer > 30) {
-      shotTimer = 30; 
+    if(shotTimer > 20) {
+      shotTimer = 20; 
     }
 //    PVector toDest = PVector.sub(destination, position);
 //    if(toDest.mag() > 3) {

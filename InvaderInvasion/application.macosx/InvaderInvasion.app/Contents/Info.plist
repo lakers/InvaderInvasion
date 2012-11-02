@@ -27,25 +27,30 @@
     <key>LSUIPresentationMode</key>
     <integer>0</integer>
 
+    <!-- make sure that applications open in 32-bit mode on Snow Leopard,
+	 otherwise video and most other native libraries will choke 
+	 http://developer.apple.com/mac/library/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW1 -->
     <key>LSArchitecturePriority</key>
     <array>
-      <string>x86_64</string>
       <string>i386</string>
-    </array>
+      <string>ppc</string>
+    </array> 
 
     <key>Java</key>
     <dict>
       <key>VMOptions</key>
       <string></string>
-
       <key>MainClass</key>
       <string>InvaderInvasion</string>
-
       <key>JVMVersion</key>
-      <string>1.6*</string>
-
+      <string>1.5*</string>
+      <key>JVMArchs</key>
+      <array>
+	<string>i386</string>
+	<string>ppc</string>
+      </array>
       <key>ClassPath</key>
-      <string>$JAVAROOT/InvaderInvasion.jar:$JAVAROOT/core.jar:$JAVAROOT/jogl-all.jar:$JAVAROOT/gluegen-rt.jar:$JAVAROOT/jogl-all-natives-macosx-universal.jar:$JAVAROOT/gluegen-rt-natives-macosx-universal.jar</string>
+      <string>$JAVAROOT/InvaderInvasion.jar:$JAVAROOT/core.jar</string>
 
       <!-- http://developer.apple.com/releasenotes/Java/java141/system_properties/chapter_4_section_1.html#//apple_ref/doc/uid/TP30000285 -->
       <key>Properties</key>

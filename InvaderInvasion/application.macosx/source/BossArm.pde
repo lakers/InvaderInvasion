@@ -5,6 +5,7 @@ public class BossArm extends BossComponent {
   private int shotTimer;
   
   public BossArm() {
+    super(10);
     target = null;
     position = new PVector();
     boundingCircle = new BoundingCircle(position, r);
@@ -23,7 +24,7 @@ public class BossArm extends BossComponent {
   }
   
   public boolean canShoot() {
-    return(shotTimer >= 30);
+    return(shotTimer >= 30 && isAlive());
   }
   
   public void shoot() {
@@ -44,6 +45,7 @@ public class BossArm extends BossComponent {
   }
   
    public void draw(boolean debug) {
+     if(isAlive()) {
      pushMatrix();
      translate(position.x, position.y);
      float b = r * cos(PI/6.0);
@@ -86,6 +88,7 @@ public class BossArm extends BossComponent {
      
      if(debug) {
        boundingCircle.draw(debug); 
+     }
      }
    }
 }

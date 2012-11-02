@@ -1,6 +1,5 @@
 import processing.core.*; 
-import processing.data.*; 
-import processing.opengl.*; 
+import processing.xml.*; 
 
 import java.applet.*; 
 import java.awt.Dimension; 
@@ -24,6 +23,7 @@ public static final int HEIGHT = 640;
 Backdrop backdrop0, backdrop1, backdrop2;
 boolean debug;
 GameObjectManager gameManager;
+BossMeter meter;
 
 // input state for ship movement
 // TODO: better input handling
@@ -114,6 +114,8 @@ public void keyReleased() {
       shot.setPosition(PVector.add(ship.getPosition(), temp));
       gameManager.addPlayerObject(shot);
     }
+  } else if(key == 't') {
+    meter.step(); 
   }
 }
 
@@ -259,6 +261,16 @@ public class Boss extends GameObject {
     leftArm.step();
     rightArm.step();
   }
+  
+  public BossComponent checkCollision(GameObject other) {
+    if(leftArm.getBoundingCircle().collidingWith(other.getBoundingCircle()) && leftArm.isAlive()) {
+      return leftArm;
+    } else if(rightArm.getBoundingCircle().collidingWith(other.getBoundingCircle()) && leftArm.isAlive()) {
+      return rightArm; 
+    }
+    return null;
+  }
+  
   public boolean canShoot() {return false;}
   public void draw(boolean debug) {
     stroke(255);
@@ -298,6 +310,7 @@ public class BossArm extends BossComponent {
   private int shotTimer;
   
   public BossArm() {
+    super(10);
     target = null;
     position = new PVector();
     boundingCircle = new BoundingCircle(position, r);
@@ -316,7 +329,7 @@ public class BossArm extends BossComponent {
   }
   
   public boolean canShoot() {
-    return(shotTimer >= 30);
+    return(shotTimer >= 30 && isAlive());
   }
   
   public void shoot() {
@@ -337,6 +350,7 @@ public class BossArm extends BossComponent {
   }
   
    public void draw(boolean debug) {
+     if(isAlive()) {
      pushMatrix();
      translate(position.x, position.y);
      float b = r * cos(PI/6.0f);
@@ -380,14 +394,61 @@ public class BossArm extends BossComponent {
      if(debug) {
        boundingCircle.draw(debug); 
      }
+     }
    }
 }
 public class BossComponent extends GameObject {
+  private int MAX_HP;
+  private int currentHP;
+  
+  public BossComponent(int maxHP) {
+    this.MAX_HP = maxHP;
+    currentHP = maxHP; 
+  }
+  
+  public boolean isAlive() {
+    return (currentHP > 0); 
+  }
+  
+  public void changeHPRelative(int change) {
+    currentHP += change; 
+  }
+  
   public void step() {}
   public boolean canShoot() {return false;}
+  public void draw(boolean debug) {  }
+}
+public class BossMeter {
+  private PVector position;
+  private final float meterWidth = 300.0f;
+  private final float meterHeight = 20.0f;
+  private final float MAX = 200.0f;
+  private float current;
+  private final float stepSize = 0.1f;
+  
+  public BossMeter(PVector position) {
+    this.position = position; 
+    current = 0.0f;
+  }
+  
+  public void step() {
+    current += stepSize; 
+    if(current >= MAX) current = MAX; 
+  }
+   
+  public float getStatus() {
+    return current/MAX; 
+  }
+   
   public void draw(boolean debug) {
-  
-  
+    stroke(255);
+    strokeWeight(2);
+    fill(0);
+    rect(position.x, position.y, meterWidth, meterHeight);
+    fill(255,0,0);
+    stroke(255, 0, 0);
+    strokeWeight(1);
+    rect(position.x + 1, position.y + 1, current/MAX * meterWidth - 2, meterHeight - 2);
   }
 }
 public class BoundingBox extends GameObject {
@@ -507,10 +568,12 @@ public class CollisionHandler {
 public abstract class GameObject {
   protected PVector position;
   protected BoundingCircle boundingCircle;
+  protected boolean visible;
 
   
   public GameObject() {
     position = new PVector();
+    visible = true;
   } 
   
   public void setPosition(PVector position) {
@@ -550,6 +613,7 @@ public class GameObjectManager {
   private boolean mouseHeld;
   
   private Boss testBoss;
+  private BossMeter bossMeter;
   
   
   public GameObjectManager(PlayerShip playerShip, PlayerHorde playerHorder) {
@@ -558,8 +622,10 @@ public class GameObjectManager {
     playerObjects = new ArrayList();
     hordeObjects = new ArrayList();
     mouseHeld = false;
-    testBoss = new Boss(new PVector(250.0f, 100.0f));
-    testBoss.setTarget(playerShip);
+    //testBoss = new Boss(new PVector(250.0f, 100.0f));
+    testBoss = null;
+    //testBoss.setTarget(playerShip);
+    bossMeter = new BossMeter(new PVector(90,5));
   } 
   
   public PlayerShip getPlayerShip() {
@@ -594,12 +660,13 @@ public class GameObjectManager {
       object.draw(debug);  
     }
     
-    
+    bossMeter.draw(debug);
   }
   
   public void step() {
     playerShip.step();
     playerHorde.step();
+    bossMeter.step();
     if(testBoss != null) {
       testBoss.step(); 
     }
@@ -640,6 +707,13 @@ public class GameObjectManager {
           playerObjects.remove(shipObject);
           hordeObjects.remove(hordeObject); 
         }
+      }
+      if(testBoss != null) {
+         BossComponent component = testBoss.checkCollision(shipObject);
+         if(component != null) {
+           component.changeHPRelative(-1);
+           playerObjects.remove(shipObject); 
+         }
       }
     }
     for(int index = 0; index < hordeObjects.size(); index++) {
@@ -688,14 +762,21 @@ public class GameObjectManager {
   
   public void createHordeObject() {
     mouseHeld = false;
-    
-//    if(mouseY < 150 && playerHorde.canSummon()) {
-//      playerHorde.summon();
-//      HexShooter hexShooter = new HexShooter();
-//      hexShooter.setPosition(playerHorde.getPosition().x, playerHorde.getPosition().y);
-//      hexShooter.setTarget(playerShip);
-//      addHordeObject(hexShooter);
-//    } 
+    if(mouseY < 150 && playerHorde.canSummon())
+    {
+      if(bossMeter.getStatus() >= 1.0f) {
+        if(testBoss == null) {
+          testBoss = new Boss(new PVector(250.0f, 100.0f));
+          testBoss.setTarget(playerShip);
+        }
+      } else {
+        playerHorde.summon();
+        HexShooter hexShooter = new HexShooter();
+        hexShooter.setPosition(playerHorde.getPosition().x, playerHorde.getPosition().y);
+        hexShooter.setTarget(playerShip);
+        addHordeObject(hexShooter);
+      }
+    } 
   }
 }
 public class HexShooter extends GameObject {
@@ -705,7 +786,7 @@ public class HexShooter extends GameObject {
   private int shotTimer;
   
   public HexShooter() {
-    shotTimer = 60;
+    shotTimer = 90;
     r = 20.0f; 
     target = null;
     boundingCircle = new BoundingCircle(position, 20);
@@ -721,13 +802,13 @@ public class HexShooter extends GameObject {
   }
   
   public boolean canShoot() {
-    return (shotTimer == 60); 
+    return (shotTimer == 90); 
   }
   
   public void step() {
     shotTimer += 1;
-    if(shotTimer > 60) {
-      shotTimer = 60; 
+    if(shotTimer > 90) {
+      shotTimer = 90; 
     }
     moveRelative(new PVector(0, rate));
     boundingCircle.setPosition(position); 
@@ -816,7 +897,7 @@ public class PlayerHorde extends GameObject {
   private int summonTimer;
   
   public PlayerHorde() {
-    summonTimer = 30; 
+    summonTimer = 60; 
   }
   
   public void draw(boolean debug) {
@@ -833,7 +914,7 @@ public class PlayerHorde extends GameObject {
   }
   
   public boolean canSummon() {
-    return (summonTimer == 30); 
+    return (summonTimer == 60); 
   }
   
   public void summon() {
@@ -842,8 +923,8 @@ public class PlayerHorde extends GameObject {
   
   public void step(){
     summonTimer += 1;
-    if(summonTimer > 30) {
-      summonTimer = 30; 
+    if(summonTimer > 60) {
+      summonTimer = 60; 
     }
   }
   
@@ -857,7 +938,7 @@ public class PlayerShip extends GameObject {
   private int shotTimer;
   
   public PlayerShip(PVector position) {
-    shotTimer = 30;
+    shotTimer = 20;
     this.position = position;
     destination = new PVector();
     
@@ -879,7 +960,7 @@ public class PlayerShip extends GameObject {
   }
   
   public boolean canShoot() {
-    return (shotTimer == 30); 
+    return (shotTimer == 20); 
   }
   
   public void shoot() {
@@ -888,8 +969,8 @@ public class PlayerShip extends GameObject {
   
   public void step() {
     shotTimer += 1;
-    if(shotTimer > 30) {
-      shotTimer = 30; 
+    if(shotTimer > 20) {
+      shotTimer = 20; 
     }
 //    PVector toDest = PVector.sub(destination, position);
 //    if(toDest.mag() > 3) {
@@ -983,12 +1064,8 @@ class StarBackdrop extends Backdrop {
   }
 }
 
-  static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "InvaderInvasion" };
-    if (passedArgs != null) {
-      PApplet.main(concat(appletArgs, passedArgs));
-    } else {
-      PApplet.main(appletArgs);
-    }
+
+  static public void main(String args[]) {
+    PApplet.main(new String[] { "--bgcolor=#F0F0F0", "InvaderInvasion" });
   }
 }
