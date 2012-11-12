@@ -1,7 +1,8 @@
 public class PlayerHorde extends GameObject {
   private int summonTimer;
   
-  public PlayerHorde() {
+  public PlayerHorde(PVector position) {
+    this.position = position;
     summonTimer = 60; 
   }
   

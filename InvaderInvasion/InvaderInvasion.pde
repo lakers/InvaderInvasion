@@ -1,15 +1,22 @@
 public static final int WIDTH = 480;
 public static final int HEIGHT = 640;
 
-Backdrop backdrop0, backdrop1, backdrop2;
+//Backdrop backdrop0, backdrop1, backdrop2;
 boolean debug;
-GameObjectManager gameManager;
-BossMeter meter;
+//GameObjectManager gameManager;
+//BossMeter meter;
+
 
 // input state for ship movement
 // TODO: better input handling
 boolean[] keys = new boolean[4];
 
+// TEST AREA
+//GameState mainMenuState;
+//GameState mainState;
+
+GameStateManager gameStateManager;
+// /TEST
 
 void setup() {
   //System.out.println("Starting");
@@ -22,53 +29,62 @@ void setup() {
   
   // TODO: make sub functions for individual setups
   // setup backdrop
-  backdrop0 = new StarBackdrop(WIDTH, HEIGHT, 2);
-  backdrop1 = new StarBackdrop(WIDTH, HEIGHT, 4);
-  backdrop2 = new StarBackdrop(WIDTH, HEIGHT, 4);
+//  backdrop0 = new StarBackdrop(WIDTH, HEIGHT, 2);
+//  backdrop1 = new StarBackdrop(WIDTH, HEIGHT, 4);
+//  backdrop2 = new StarBackdrop(WIDTH, HEIGHT, 4);
   
   // setup player
-  PlayerShip player = new PlayerShip(new PVector(200, 500));
-  player.destination.x = player.getPosition().x;
-  player.destination.y = player.getPosition().y;
+//  PlayerShip player = new PlayerShip(new PVector(200, 500));
+//  player.destination.x = player.getPosition().x;
+//  player.destination.y = player.getPosition().y;
 
   // setup horde
-  PlayerHorde horde = new PlayerHorde();
-  horde.setPosition(new PVector(200, 100));
+//  PlayerHorde horde = new PlayerHorde(new PVector(200, 100));
+//  horde.setPosition(new PVector(200, 100));
 
   // Game Object Manager
-  gameManager = new GameObjectManager(player, horde);
+  //gameManager = new GameObjectManager(player, horde);
   
   // TEST AREA
+  gameStateManager = new GameStateManager();
   
+  GameState mainMenuState = new MainMenuState(gameStateManager);
+  GameState mainState = new MainGameState(gameStateManager);
+  
+  
+  gameStateManager.addState(mainMenuState, "Main Menu");
+  gameStateManager.addState(mainState, "Main Game State");
+  gameStateManager.setCurrent("Main Menu");
   // /TEST AREA
 }
 
 void mouseReleased() {
-  gameManager.createHordeObject();
-  gameManager.setMouseHeld(false);
+  //gameManager.createHordeObject();
+  //gameManager.setMouseHeld(false);
 }
 
-void mousePressed() {
-  gameManager.setMouseHeld(true); 
-}
+//void mousePressed() {
+  //System.out.println("test");
+  //gameManager.setMouseHeld(true); 
+//}
 
 
 // TODO: move to input handler
 void keyPressed() {
-  PVector dir = new PVector();
-  int speed = 10;
-  if(keyCode == UP) {
-    keys[0] = true;
-  }
-  if(keyCode == DOWN) {
-    keys[1] = true;
-  }
-  if(keyCode == LEFT) {
-    keys[2] = true;
-  }
-  if(keyCode == RIGHT) {
-    keys[3] = true;
-  }
+//  PVector dir = new PVector();
+//  int speed = 10;
+//  if(keyCode == UP) {
+//    keys[0] = true;
+//  }
+//  if(keyCode == DOWN) {
+//    keys[1] = true;
+//  }
+//  if(keyCode == LEFT) {
+//    keys[2] = true;
+//  }
+//  if(keyCode == RIGHT) {
+//    keys[3] = true;
+//  }
   if(key == 'd') {
     debug = !debug; 
   } 
@@ -78,64 +94,71 @@ void keyPressed() {
 }
 
 void keyReleased() {
-  if(keyCode == UP) {
-    keys[0] = false;
-  } else if(keyCode == DOWN) {
-    keys[1] = false; 
-  } else if(keyCode == LEFT) {
-    keys[2] = false; 
-  } else if(keyCode == RIGHT) {
-    keys[3] = false; 
-  } else if(keyCode == CONTROL) {
-    PlayerShip ship = gameManager.getPlayerShip();
-    if(ship.canShoot()){
-      ship.shoot();
-      PlayerShot shot = new PlayerShot();
-      PVector temp = new PVector(0.0f, -15.0f);
-      shot.setPosition(PVector.add(ship.getPosition(), temp));
-      gameManager.addPlayerObject(shot);
-    }
-  } else if(key == 't') {
-    meter.step(); 
-  }
+//  if(keyCode == UP) {
+//    keys[0] = false;
+//  } else if(keyCode == DOWN) {
+//    keys[1] = false; 
+//  } else if(keyCode == LEFT) {
+//    keys[2] = false; 
+//  } else if(keyCode == RIGHT) {
+//    keys[3] = false; 
+//  } else if(keyCode == CONTROL) {
+//    PlayerShip ship = gameManager.getPlayerShip();
+//    if(ship.canShoot()){
+//      ship.shoot();
+//      PlayerShot shot = new PlayerShot();
+//      PVector temp = new PVector(0.0f, -15.0f);
+//      shot.setPosition(PVector.add(ship.getPosition(), temp));
+//      gameManager.addPlayerObject(shot);
+//    }
+//  } else if(key == 't') {
+//    meter.step(); 
+//  }
 }
 
 // main draw loop
 void draw() {
-  gameManager.parseInput();
+  //gameManager.parseInput();
   
   // TODO: put this in input handler
-  PlayerShip playerShip = gameManager.getPlayerShip();
-  
-  PVector dir = new PVector(0, 0);
-  if(keys[0]) {
-    if(playerShip.getPosition().y > 20.0) dir.y -= 5.0;
-  }
-  if(keys[1]) {
-    if(playerShip.getPosition().y < HEIGHT - 25.0) dir.y += 5.0;
-  }
-  if(keys[2]) {
-    if(playerShip.getPosition().x > 20.0) dir.x -= 5.0;
-  }
-  if(keys[3]) {
-    if(playerShip.getPosition().x < WIDTH - 20.0) dir.x += 5.0; 
-  }
-  
-  playerShip.moveRelative(dir);
+//  PlayerShip playerShip = gameManager.getPlayerShip();
+//  
+//  PVector dir = new PVector(0, 0);
+//  if(keys[0]) {
+//    if(playerShip.getPosition().y > 20.0) dir.y -= 5.0;
+//  }
+//  if(keys[1]) {
+//    if(playerShip.getPosition().y < HEIGHT - 25.0) dir.y += 5.0;
+//  }
+//  if(keys[2]) {
+//    if(playerShip.getPosition().x > 20.0) dir.x -= 5.0;
+//  }
+//  if(keys[3]) {
+//    if(playerShip.getPosition().x < WIDTH - 20.0) dir.x += 5.0; 
+//  }
+//  
+//  playerShip.moveRelative(dir);
   
   // logic update
-  gameManager.step();
+  //gameManager.step();
   
   // check and resolve collisions
-  gameManager.checkCollisions();
+  //gameManager.checkCollisions();
   
   // draw
-  background(0);
+  //background(0);
   
   // draw backdrop
-  backdrop0.draw(debug);  
-  backdrop1.draw(debug);
-  backdrop2.draw(debug);
+  //backdrop0.draw(debug);  
+  //backdrop1.draw(debug);
+  //backdrop2.draw(debug);
 
-  gameManager.draw(debug);
+  //gameManager.draw(debug);
+  //state.handleInput();
+  //state.draw(debug);
+  
+  //mainState.handleInput();
+  //mainState.update();
+  //mainState.draw(debug);
+  gameStateManager.run(debug);
 }

@@ -71,7 +71,7 @@ public class Boss extends GameObject {
   public BossComponent checkCollision(GameObject other) {
     if(leftArm.getBoundingCircle().collidingWith(other.getBoundingCircle()) && leftArm.isAlive()) {
       return leftArm;
-    } else if(rightArm.getBoundingCircle().collidingWith(other.getBoundingCircle()) && leftArm.isAlive()) {
+    } else if(rightArm.getBoundingCircle().collidingWith(other.getBoundingCircle()) && rightArm.isAlive()) {
       return rightArm; 
     }
     return null;

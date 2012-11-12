@@ -6,6 +6,8 @@ public class PlayerShip extends GameObject {
     shotTimer = 20;
     this.position = position;
     destination = new PVector();
+    destination.x = position.x;
+    destination.y = position.y;
     
     PVector temp = new PVector(0.0, 5.0);
     boundingCircle = new BoundingCircle(PVector.add(temp, position), 25);

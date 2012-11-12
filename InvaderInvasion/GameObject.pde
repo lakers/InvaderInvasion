@@ -3,7 +3,6 @@ public abstract class GameObject {
   protected BoundingCircle boundingCircle;
   protected boolean visible;
 
-  
   public GameObject() {
     position = new PVector();
     visible = true;

@@ -28,6 +28,6 @@ public class BossMeter {
     fill(255,0,0);
     stroke(255, 0, 0);
     strokeWeight(1);
-    rect(position.x + 1, position.y + 1, current/MAX * meterWidth - 2, meterHeight - 2);
+    rect(position.x + 1, position.y + 1, current/MAX * meterWidth - 3, meterHeight - 2);
   }
 }

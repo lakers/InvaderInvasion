@@ -15,9 +15,7 @@ public class GameObjectManager {
     playerObjects = new ArrayList();
     hordeObjects = new ArrayList();
     mouseHeld = false;
-    //testBoss = new Boss(new PVector(250.0f, 100.0f));
     testBoss = null;
-    //testBoss.setTarget(playerShip);
     bossMeter = new BossMeter(new PVector(90,5));
   } 
   
@@ -80,7 +78,7 @@ public class GameObjectManager {
         hexShooter.shoot();
         HexShooterShot shot = new HexShooterShot(hexShooter.toTarget());
         shot.setPosition(object.getPosition().x, object.getPosition().y);
-        gameManager.addHordeObject(shot);
+        addHordeObject(shot);
       } 
       if(object.getPosition().y > 660) {
         hordeObjects.remove(object);
@@ -123,24 +121,48 @@ public class GameObjectManager {
   public void parseInput() {
     // move horde selector
     playerHorde.setPosition(mouseX, mouseY); 
-    if(mouseHeld && testBoss != null) {
-      if(testBoss.getBoundingBox().collidesWith(new PVector(mouseX, mouseY))) {
-        testBoss.setDestination(new PVector(mouseX, mouseY)); 
+    if(mousePressed) {
+      createHordeObject();
+    }
+    
+    PVector dir = new PVector(0, 0);
+    if(keyPressed) {
+      if(keyCode == UP) {
+        if(playerShip.getPosition().y > 20.0) dir.y -= 5.0;
+      }
+      if(keyCode == DOWN) {
+        if(playerShip.getPosition().y < HEIGHT - 25.0) dir.y += 5.0;
+      }
+      if(keyCode == LEFT) {
+        if(playerShip.getPosition().x > 20.0) dir.x -= 5.0;
+      }
+      if(keyCode == RIGHT) {
+        if(playerShip.getPosition().x < WIDTH - 20.0) dir.x += 5.0; 
       }
     }
+    
+    playerShip.moveRelative(dir);
+    
+    
+    //if(mouseHeld && testBoss != null) {
+      //if(testBoss.getBoundingBox().collidesWith(new PVector(mouseX, mouseY))) {
+        //testBoss.setDestination(new PVector(mouseX, mouseY)); 
+      //}
+    //}
   }
   
   public void setMouseHeld(boolean held) {
-    if(mouseHeld == false && held == true) {
-      if(testBoss != null) {
-        if(testBoss.getBoundingBox().collidesWith(new PVector(mouseX, mouseY))) {
-          testBoss.setStart(new PVector(mouseX, mouseY));
-        }
-      } 
-    }
+//    if(mouseHeld == false && held == true) {
+//      if(testBoss != null) {
+//        if(testBoss.getBoundingBox().collidesWith(new PVector(mouseX, mouseY))) {
+//          testBoss.setStart(new PVector(mouseX, mouseY));
+//        }
+//      } 
+//    }
     
     mouseHeld = held; 
-    if(testBoss != null && held == true) {  
+    //if(testBoss != null && held == true) {  
+    if(testBoss != null && mousePressed) {
       BossArm arm = testBoss.shoot(); 
       if(arm != null && arm.canShoot()) {
         arm.shoot(); 
@@ -148,10 +170,12 @@ public class GameObjectManager {
         HexShooterShot shot = new HexShooterShot(toTarg);
         toTarg.mult(35);
         shot.setPosition(arm.getPosition().x + toTarg.x, arm.getPosition().y + toTarg.y);
-        gameManager.addHordeObject(shot);
+        addHordeObject(shot);
       }
     }
   }
+  
+ 
   
   public void createHordeObject() {
     mouseHeld = false;

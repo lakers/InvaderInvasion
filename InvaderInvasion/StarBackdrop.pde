@@ -15,7 +15,6 @@ class StarBackdrop extends Backdrop {
        star.setPosition(new PVector(random(w), random(h)));
        stars.add(star);
     }
-    
   }
   
   public void step() {
@@ -35,7 +34,7 @@ class StarBackdrop extends Backdrop {
        GameObject star = (GameObject)stars.get(index);
        star.draw(debug);
     }
-    step();
+    //step();
   } 
   
   private class Star extends GameObject {
@@ -50,11 +49,11 @@ class StarBackdrop extends Backdrop {
       popMatrix(); 
     }
     
-    public void step() {}
-    
     public boolean canShoot() {
       return false; 
     }
+    
+    public void step() {}
   }
 }
 
